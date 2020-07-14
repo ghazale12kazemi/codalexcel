@@ -1,3 +1,5 @@
+from datetime import timezone
+
 import requests
 
 
@@ -19,13 +21,13 @@ while num < 2:
            print(a)
            url = a['ExcelUrl']
            title = a['Title']
-           CompanyName = a['CompanyName']
-           Symbol = a['Symbol']
-           PublishDateTime = a['PublishDateTime']
-           print(title , CompanyName)
+           company_name = a['CompanyName']
+           symbol = a['Symbol']
+           publish_date_time = timezone.now()
+           print(title , company_name)
            r = requests.get(url, verify=False)
 
-           with open(f'codal{Symbol}.xlsx', 'wb') as f:
+           with open(f'codal{symbol}.xlsx', 'wb') as f:
                f.write(r.content)
 
 

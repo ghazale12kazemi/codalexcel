@@ -1,6 +1,7 @@
 from django.urls import path
-from . import views
+
+from personal.views import AllCodalsView
 
 urlpatterns = [
-    path('',views.home, name='home' ),
+    path('', AllCodalsView.as_view(), name='codals'),
 ]

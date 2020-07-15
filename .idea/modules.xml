@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/codalExcel.iml" filepath="$PROJECT_DIR$/.idea/codalExcel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/codale.iml" filepath="$PROJECT_DIR$/.idea/codale.iml" />
     </modules>
   </component>
 </project>

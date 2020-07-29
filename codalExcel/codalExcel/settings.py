@@ -121,5 +121,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-MEDIA_ROOT = '/home/kuzey/PycharmProjects/codale/codalExcel/media'
+MEDIA_ROOT = '\lenovo\PycharmProjects\codalexcel\codalExcel\media'
 MEDIA_URL = '/media/'

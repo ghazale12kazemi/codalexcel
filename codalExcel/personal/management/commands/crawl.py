@@ -2,14 +2,17 @@ import jdatetime
 import requests
 from django.core.management import BaseCommand
 
+
 from personal.models import Codal
 
 requests.packages.urllib3.disable_warnings()
 
-URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Chi'
-'lds=true&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-'
-'1&LetterType=-1&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false'
-'&TracingNo=-1&search=false'
+URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
+      '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
+      '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&TracingNo=-1&search=fals'
+
+j = requests.get(URL, verify=False).json()
+print(j.keys())
 
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
 DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
@@ -17,6 +20,7 @@ DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 
 def crawl():
     js = requests.get(URL, verify=False).json()
+
     ls = js['Letters']
     for l in ls:
         if l['HasExcel']:

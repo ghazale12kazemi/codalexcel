@@ -4,6 +4,7 @@ import pandas
 from django.utils.html import format_html
 
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
+ARAB_TRANS = str.maketrans('يك', 'یک')
 
 
 class Codal(models.Model):

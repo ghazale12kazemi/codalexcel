@@ -1,22 +1,19 @@
-<table class="ui striped table">
+<table>
     <thead>
     <tr>
         <th>Title</th>
-        <th>Publish Date Time</th>
         <th>Download</th>
         <th>Sood</th>
     </tr>
     </thead>
     <tbody>
     {% for codal in codals %}
-        <tr>
-            <td>{{ codal.symbol }}</td>
-            <td>{{codal.publish_date_time}}</td>
-            <td><a href="{{ codal.download_link }}">Download</a></td>
-            <td>{{ codal.some_value }}</td>
-            <td>{{ codal.some_table }}</td>
-        </tr>
+    <tr>
+        <td style="border-bottom: 1px solid black">{{ codal.symbol }}</td>
+        <td style="border-bottom: 1px solid black"><a href="{{ codal.download_link }}">Download</a></td>
+        <td style="border-bottom: 1px solid black">{{ codal.some_value }}</td>
+        <td style="border-bottom: 1px solid black">{{ codal.some_table }}</td>
+    </tr>
     {% endfor %}
-
     </tbody>
 </table>

@@ -1,7 +1,7 @@
 import jdatetime
 import requests
 from django.core.management import BaseCommand
-
+from bs4 import BeautifulSoup
 
 from personal.models import Codal
 

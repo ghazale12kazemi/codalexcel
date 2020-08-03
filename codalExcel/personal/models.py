@@ -41,13 +41,14 @@ class Codal(models.Model):
             return 'bad'
 
     @property
+    @property
     def some_table(self):
         try:
             with open(self.filename) as f:
                 soup = BeautifulSoup(f.read().translate(ARAB_TRANS), 'html.parser')
-                h3 = soup.find('h3', text='صورت سود و زیان')
+                h3 = soup.find('h3')
                 table = h3.find_next('table')
-                return format_html(''.join(table.contents))
+                return format_html(table.prettify())
         except Exception:
             return 'bad table'
 

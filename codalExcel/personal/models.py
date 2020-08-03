@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 from django.db import models
 import pandas
-
+from django.utils.html import format_html
 
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
 
@@ -33,11 +33,22 @@ class Codal(models.Model):
             element = soup.find(text='سود (زیان) ناخالص ')
             if not element:
                 element = soup.find(text='سود (زيان) ناخالص ')
-            sood1 = element.next.text
-            sood1 = int(sood1.translate(TRANS).replace(',', '').strip())
-            return sood1
+            sood = element.next.text
+            sood = int(sood.translate(TRANS).replace(',', '').strip())
+            return sood
         except Exception:
             return 'bad'
+
+    @property
+    def some_table(self):
+        try:
+            with open(self.filename) as f:
+                soup = BeautifulSoup(f.read().translate(ARAB_TRANS), 'html.parser')
+                h3 = soup.find('h3', text='صورت سود و زیان')
+                table = h3.find_next('table')
+                return format_html(''.join(table.contents))
+        except Exception:
+            return 'bad table'
 
     def __str__(self):
         return self.symbol

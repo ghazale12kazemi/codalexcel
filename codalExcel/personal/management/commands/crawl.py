@@ -15,6 +15,7 @@ j = requests.get(URL, verify=False).json()
 print(j.keys())
 
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
+ARAB_TRANS = str.maketrans('يك', 'یک')
 DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 
 

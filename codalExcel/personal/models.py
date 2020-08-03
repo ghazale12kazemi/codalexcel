@@ -41,7 +41,6 @@ class Codal(models.Model):
             return 'bad'
 
     @property
-    @property
     def some_table(self):
         try:
             with open(self.filename) as f:

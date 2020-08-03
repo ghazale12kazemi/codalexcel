@@ -33,9 +33,9 @@ class Codal(models.Model):
             element = soup.find(text='سود (زیان) ناخالص ')
             if not element:
                 element = soup.find(text='سود (زيان) ناخالص ')
-            sood = element.next.text
-            sood = int(sood.translate(TRANS).replace(',', '').strip())
-            return sood
+            sood1 = element.next.text
+            sood1 = int(sood1.translate(TRANS).replace(',', '').strip())
+            return sood1
         except Exception:
             return 'bad'
 

@@ -6,6 +6,8 @@ from django.views import View
 
 from personal.models import Codal
 
+from .filters import OrderFilter
+
 
 def home(request):
     return render(request, 'home.html', {'name': 'ghazale'})
@@ -13,10 +15,13 @@ def home(request):
 
 class AllCodalsView(View):
     def get(self, request):
+        myFilter = OrderFilter()
+
+        context = {'codals': Codal.objects.all(),'myFilter':myFilter }
+
+
         return render(
             request=request,
             template_name='codals.html',
-            context={
-                'codals': Codal.objects.all()
-            }
+            context = context
         )

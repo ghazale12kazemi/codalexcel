@@ -36,6 +36,11 @@ def crawl():
             trans_datetime = raw_datetime.translate(TRANS)
             publish_date_time = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
 
+            #=======
+            d = jdatetime.datetime.strptime(publish_date_time, "%d-%b-%Y")
+            desired_output = '{d.day} {d.month} {d.year}'.format(d=d)
+            publish_date_time = jdatetime.datetime.strftime(d, "%d %m %Y")
+
             print('Downloading ..')
             r = requests.get(url, verify=False)
             print('Done.')

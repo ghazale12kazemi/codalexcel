@@ -48,7 +48,7 @@ class Codal(models.Model):
                 h3 = soup.find('h3')
                 table = h3.find_next('table')
                 return format_html(table.prettify())
-        except Exception:
+        except Exception as e:
             return 'bad table'
 
     def __str__(self):

@@ -39,7 +39,19 @@ class Codal(models.Model):
             return sood
         except Exception:
             return 'bad'
-
+    @property
+    def some_value1(self):
+        try:
+            with open(self.filename) as f:
+                soup = BeautifulSoup(f, 'html.parser')
+            element = soup.find(text='سود (زیان) ناخالص ')
+            if not element:
+                element = soup.find(text='سود (زيان) ناخالص ')
+            sood = element.next.next.text
+            sood = int(sood.translate(TRANS).replace(',', '').strip())
+            return sood
+        except Exception:
+            return 'bad'
     @property
     def some_table(self):
         try:

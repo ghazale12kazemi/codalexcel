@@ -6,4 +6,4 @@ from .models import *
 class OrderFilter(django_filters.FilterSet):
     class Meta:
         model = Codal
-        fields = 'Symbol'
+        fields = '__all__'

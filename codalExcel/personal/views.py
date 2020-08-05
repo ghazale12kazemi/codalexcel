@@ -15,9 +15,13 @@ def home(request):
 
 class AllCodalsView(View):
     def get(self, request):
-        myFilter = OrderFilter()
 
-        context = {'codals': Codal.objects.all(),'myFilter':myFilter }
+        codals = Codal.objects.all()
+
+        myFilter = OrderFilter(request.GET, queryset= codals)
+        codals = myFilter.qs
+
+        context = {'codals': codals,'myFilter':myFilter }
 
 
         return render(

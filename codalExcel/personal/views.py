@@ -9,10 +9,6 @@ from personal.models import Codal
 from .filters import OrderFilter
 
 
-def home(request):
-    return render(request, 'home.html', {'name': 'ghazale'})
-
-
 class AllCodalsView(View):
     def get(self, request):
 

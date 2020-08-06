@@ -33,11 +33,8 @@ def crawl():
             company_name = l['CompanyName']
             raw_datetime = l['PublishDateTime']
             trans_datetime = raw_datetime.translate(TRANS)
-            publish_date_time = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
+            d = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
 
-            d = jdatetime.datetime.strptime(publish_date_time, "%d-%b-%Y")
-            desired_output = '{d.day} {d.month} {d.year}'.format(d=d)
-            publish_date_time = jdatetime.datetime.strftime(d, "%d %m %Y")
 
             print('Downloading ..')
             r = requests.get(url, verify=False)
@@ -53,7 +50,7 @@ def crawl():
                 symbol=symbol,
                 company_name=company_name,
                 filename=filename,
-                publish_date_time=publish_date_time.togregorian()
+                publish_date_time=d.togregorian()
             )
 
 

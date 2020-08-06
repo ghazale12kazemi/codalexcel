@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 from django.db import models
 from django.utils.html import format_html
 
+
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
 ARAB_TRANS = str.maketrans('يك', 'یک')
 
@@ -31,13 +32,18 @@ class Codal(models.Model):
         try:
             with open(self.filename) as f:
                 soup = BeautifulSoup(f, 'html.parser')
-            element = soup.find(text='سود (زیان) ناخالص ')
+            element = soup.find(text='سود (زيان) ناخالص')
+
+            print(type(element))
+            print(element)
+
             if not element:
                 element = soup.find(text='سود (زيان) ناخالص ')
             sood = element.next.text
             sood = int(sood.translate(TRANS).replace(',', '').strip())
             return sood
-        except Exception:
+        except Exception as e:
+            print(e)
             return 'bad'
     @property
     def some_value1(self):

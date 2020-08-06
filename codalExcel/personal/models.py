@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 from django.db import models
-import pandas
 from django.utils.html import format_html
 
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')

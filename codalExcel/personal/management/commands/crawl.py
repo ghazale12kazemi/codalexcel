@@ -1,7 +1,6 @@
 import jdatetime
 import requests
 from django.core.management import BaseCommand
-from bs4 import BeautifulSoup
 
 from personal.models import Codal
 
@@ -9,7 +8,7 @@ requests.packages.urllib3.disable_warnings()
 
 URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
       '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
-      '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&TracingNo=-1&search=fals'
+      '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber=1&Publisher=false&TracingNo=-1&search=false'
 
 j = requests.get(URL, verify=False).json()
 print(j.keys())
@@ -36,7 +35,6 @@ def crawl():
             trans_datetime = raw_datetime.translate(TRANS)
             publish_date_time = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
 
-            #=======
             d = jdatetime.datetime.strptime(publish_date_time, "%d-%b-%Y")
             desired_output = '{d.day} {d.month} {d.year}'.format(d=d)
             publish_date_time = jdatetime.datetime.strftime(d, "%d %m %Y")

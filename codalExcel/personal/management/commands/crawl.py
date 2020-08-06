@@ -53,6 +53,7 @@ def crawl():
             Codal.objects.create(
                 title=title,
                 symbol=symbol,
+                company_name=company_name,
                 filename=filename,
                 publish_date_time=publish_date_time.togregorian()
             )

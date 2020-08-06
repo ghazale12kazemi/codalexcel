@@ -10,6 +10,7 @@ ARAB_TRANS = str.maketrans('يك', 'یک')
 class Codal(models.Model):
     title = models.CharField(max_length=128)
     symbol = models.CharField(max_length=128)
+    company_name = models.CharField(max_length=128)
     filename = models.CharField(max_length=128)
     publish_date_time = models.DateTimeField()
 

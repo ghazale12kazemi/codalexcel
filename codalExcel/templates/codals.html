@@ -11,11 +11,12 @@
     <thead>
     <tr>
         <th>Symbol</th>
+        <th>Company Name</th>
         <th>Download</th>
         <th>Sood</th>
         <th>Last year Sood</th>
-        <th>Duration</th>
-        <th>publish date time</th>
+        <th>Title</th>
+        <th>publish Date Time</th>
 
     </tr>
     </thead>
@@ -23,6 +24,7 @@
     {% for codal in codals %}
     <tr>
         <td style="border-bottom: 1px solid black">{{ codal.symbol }}</td>
+        <td style="border-bottom: 1px solid black">{{ codal.company_name }}</td>
         <td style="border-bottom: 1px solid black"><a href="{{ codal.download_link }}">Download</a></td>
         <td style="border-bottom: 1px solid black">{{ codal.some_value }}</td>
         <td style="border-bottom: 1px solid black">{{ codal.some_value1 }}</td>

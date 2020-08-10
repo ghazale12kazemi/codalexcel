@@ -2,10 +2,8 @@ from bs4 import BeautifulSoup
 from django.db import models
 from django.utils.html import format_html
 
-
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
 ARAB_TRANS = str.maketrans('يك', 'یک')
-
 
 class Codal(models.Model):
     title = models.CharField(max_length=128)
@@ -13,53 +11,57 @@ class Codal(models.Model):
     company_name = models.CharField(max_length=128)
     filename = models.CharField(max_length=128)
     publish_date_time = models.DateTimeField()
+    fund = models.CharField(max_length=128)
+    type = models.CharField(max_length=128)
+    sood = models.CharField(max_length=128)
+    sood1 = models.CharField(max_length=128)
 
     @property
     def download_link(self):
         return f'{self.filename}'
 
-   # @property
-   # def some_value(self):
-    #    try:
-    #        df = pandas.read_html(self.filename)[0]
-    #        sood = int(df.loc[3][2].translate(TRANS).replace(',', ''))
-    #        return sood
-    #    except Exception:
-    #        return 'bad'
-
     @property
     def some_value(self):
         try:
-            with open(self.filename) as f:
-                soup = BeautifulSoup(f, 'html.parser')
-            element = soup.find(text='سود (زيان) ناخالص')
+            f = open(self.filename, encoding='utf-8')
+            html_doc = f.read()
+            f.close()
 
-            print(type(element))
-            print(element)
+            query = "سود (زيان) ناخالص "
+            query2 = "سود (زیان) ناخالص "
 
-            if not element:
-                element = soup.find(text='سود (زيان) ناخالص ')
-            sood = element.next.text
-            sood = int(sood.translate(TRANS).replace(',', '').strip())
-            return sood
-        except Exception as e:
-            print(e)
-            return 'bad'
+            soup = BeautifulSoup(html_doc, 'html.parser')
+
+            elemenet = soup.find('span', text=query)
+            if not elemenet:
+                elemenet = soup.find('span', text=query2)
+            parent = elemenet.find_parent()
+            next_parent = parent.find_next_sibling()
+            return int(next_parent.text.translate(TRANS).replace(',', '').strip())
+        except:
+            return "Error in sood"
+
     @property
     def some_value1(self):
         try:
-            with open(self.filename) as f:
-                soup = BeautifulSoup(f, 'html.parser')
-            element = soup.find(text='سود (زیان) ناخالص ')
-            if not element:
-                element = soup.find(text='سود (زيان) ناخالص ')
-            sood = element.next.text
-            element1 = soup.find(text=sood)
-            sood1 = element1.next.text
-            sood1 = int(sood1.translate(TRANS).replace(',', '').strip())
-            return sood1
-        except Exception:
-            return 'bad'
+            f = open(self.filename, encoding='utf-8')
+            html_doc = f.read()
+            f.close()
+
+            query = "سود (زيان) ناخالص "
+            query2 = "سود (زیان) ناخالص "
+
+            soup = BeautifulSoup(html_doc, 'html.parser')
+
+            elemenet = soup.find('span', text=query)
+            if not elemenet:
+                elemenet = soup.find('span', text=query2)
+            parent = elemenet.find_parent()
+            next_parent = parent.find_next_sibling()
+            next_next_parent = next_parent.find_next_sibling()
+            return int(next_next_parent.text.translate(TRANS).replace(',', '').strip())
+        except:
+            return "Error in sood"
     @property
     def some_table(self):
         try:
@@ -70,6 +72,15 @@ class Codal(models.Model):
                 return format_html(table.prettify())
         except Exception as e:
             return 'bad table'
+
+    # @property
+    # def some_value(self):
+    #    try:
+    #        df = pandas.read_html(self.filename)[0]
+    #        sood = int(df.loc[3][2].translate(TRANS).replace(',', ''))
+    #        return sood
+    #    except Exception:
+    #        return 'bad'
 
     def __str__(self):
         return self.symbol

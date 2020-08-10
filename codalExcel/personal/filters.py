@@ -7,4 +7,4 @@ class OrderFilter(django_filters.FilterSet):
     class Meta:
         model = Codal
         fields = '__all__'
-        exclude = ['filename','title','publish_date_time']
+        exclude = ['filename','title','publish_date_time','sood','sood1']

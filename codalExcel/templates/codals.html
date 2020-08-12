@@ -31,13 +31,13 @@
     <tr>
         <th>Symbol</th>
         <th>Company Name</th>
-        <th>Download</th>
-        <th>Sood</th>
-        <th>Last year Sood</th>
+        <th>Forosh</th>
+        <th>Sood Amaliyati</th>
+        <th>Sood Khales</th>
         <th>Title</th>
         <th>Fund</th>
-        <th></th>
         <th>Type</th>
+        <th>Duration</th>
 
 
     </tr>
@@ -45,15 +45,15 @@
     <tbody>
     {% for codal in codals %}
     <tr>
-        <td style="border-bottom: 1px solid black">{{ codal.symbol }}</td>
+        <td style="border-bottom: 1px solid black"><a href="{{ codal.download_link }}">{{ codal.symbol }}</a></td>
         <td style="border-bottom: 1px solid black">{{ codal.company_name }}</td>
-        <td style="border-bottom: 1px solid black"><a href="{{ codal.download_link }}">Download</a></td>
-        <td style="border-bottom: 1px solid black">{{ codal.sood}}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.sood1 }}</td>
+        <td style="border-bottom: 1px solid black">{{ codal.forosh}}</td>
+        <td style="border-bottom: 1px solid black">{{ codal.sood_amaliyati }}</td>
+        <td style="border-bottom: 1px solid black">{{ codal.sood_khales }}</td>
         <td style="border-bottom: 1px solid black">{{ codal.title }}</td>
         <td style="border-bottom: 1px solid black">{{ codal.fund }}</td>
-        <td style="border-bottom: 1px solid black"></td>
         <td style="border-bottom: 1px solid black">{{ codal.type }}</td>
+        <td style="border-bottom: 1px solid black">{{ codal.duration }}</td>
     </tr>
     {% endfor %}
     </tbody>

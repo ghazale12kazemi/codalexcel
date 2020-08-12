@@ -13,8 +13,10 @@ class Codal(models.Model):
     publish_date_time = models.DateTimeField()
     fund = models.CharField(max_length=128)
     type = models.CharField(max_length=128)
-    sood = models.CharField(max_length=128)
-    sood1 = models.CharField(max_length=128)
+    forosh = models.CharField(max_length=128)
+    sood_amaliyati = models.CharField(max_length=128)
+    sood_khales = models.CharField(max_length=128)
+    duration = models.CharField(max_length=128)
 
     @property
     def download_link(self):

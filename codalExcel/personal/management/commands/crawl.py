@@ -94,7 +94,7 @@ def find_duration(title,type):
         return 0
 
 def crawl():
-    num = 1
+    num = 11
     for i in range(10):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \

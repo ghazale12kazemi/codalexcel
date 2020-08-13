@@ -94,8 +94,8 @@ def find_duration(title,type):
         return 0
 
 def crawl():
-    num = 11
-    for i in range(10):
+    num = 1
+    for i in range(1000):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
               '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
@@ -107,9 +107,6 @@ def crawl():
         ls = js['Letters']
         for l in ls:
             if l['HasExcel']:
-                print(f"Letter {l['Title']} has excel.")
-                print(l)
-
                 url = l['ExcelUrl']
                 title = l['Title']
                 symbol = l['Symbol']
@@ -121,35 +118,37 @@ def crawl():
                 d = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
                 duration = find_duration(title, type)
 
-                print('Downloading ..')
-                try:
-                    r = requests.get(url, verify=False, timeout=20)
-                except Timeout:
-                    print(f'Downloading timeout\n{url}')
-                    continue
-                print('Done.')
+                if symbol == "فولاد":
+                    print("فولاد")
+                    print('Downloading ..')
+                    try:
+                        r = requests.get(url, verify=False, timeout=20)
+                    except Timeout:
+                        print(f'Downloading timeout\n{url}')
+                        continue
+                    print('Done.')
 
-                filename = f'media/codal{company_name}.xls'
+                    filename = f'media/codal{company_name}.xls'
 
-                with open(filename, 'wb') as f:
-                    f.write(r.content)
-                forosh = load_values_from_excel(filename, "درآمدهای عملیاتی ", 'درآمدهای عملیاتی')
-                sood_amaliyati = load_values_from_excel(filename, 'سود (زیان) عملیاتی ', 'سود (زيان) عملياتي')
-                sood_khales = load_all_values_from_excel(filename, 'سود (زیان) خالص ')
+                    with open(filename, 'wb') as f:
+                        f.write(r.content)
+                    forosh = load_values_from_excel(filename, "درآمدهای عملیاتی ", 'درآمدهای عملیاتی')
+                    sood_amaliyati = load_values_from_excel(filename, 'سود (زیان) عملیاتی ', 'سود (زيان) عملياتي')
+                    sood_khales = load_all_values_from_excel(filename, 'سود (زیان) خالص ')
 
-                Codal.objects.create(
-                    title=title,
-                    symbol=symbol,
-                    company_name=company_name,
-                    filename=filename,
-                    publish_date_time=d.togregorian(),
-                    fund=fund,
-                    type=type,
-                    forosh=forosh,
-                    sood_amaliyati=sood_amaliyati,
-                    sood_khales=sood_khales,
-                    duration = duration
-                )
+                    Codal.objects.create(
+                        title=title,
+                        symbol=symbol,
+                        company_name=company_name,
+                        filename=filename,
+                        publish_date_time=d.togregorian(),
+                        fund=fund,
+                        type=type,
+                        forosh=forosh,
+                        sood_amaliyati=sood_amaliyati,
+                        sood_khales=sood_khales,
+                        duration = duration
+                    )
 
 
 class Command(BaseCommand):

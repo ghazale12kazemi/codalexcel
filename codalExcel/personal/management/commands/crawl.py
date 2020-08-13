@@ -100,6 +100,7 @@ def crawl():
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
               '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
             num)
+        print(num)
         num = num + 1
 
         js = requests.get(URL, verify=False).json()

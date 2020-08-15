@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 from django.core.management import BaseCommand
 from requests import Timeout
 
-from personal.models import Codal
+from personal.models import Codal, Symbol
 
 requests.packages.urllib3.disable_warnings()
 
@@ -47,7 +47,8 @@ def load_values_from_excel(self, query, query2):
         parent = elemenet.find_parent()
         next_parent = parent.find_next_sibling()
         if '(' in next_parent.text:
-            return (-1 * int(next_parent.text.translate(TRANS).replace(',', '').replace(')', '').replace('(', '').strip()))
+            return (-1 * int(
+                next_parent.text.translate(TRANS).replace(',', '').replace(')', '').replace('(', '').strip()))
         else:
             return int(next_parent.text.translate(TRANS).replace(',', '').strip())
     except:
@@ -72,13 +73,15 @@ def load_all_values_from_excel(self, query):
                 break
 
         if '(' in next_parent.text:
-            return (-1 * int(next_parent.text.translate(TRANS).replace(',', '').replace(')', '').replace('(', '').strip()))
+            return (-1 * int(
+                next_parent.text.translate(TRANS).replace(',', '').replace(')', '').replace('(', '').strip()))
         else:
             return int(next_parent.text.translate(TRANS).replace(',', '').strip())
     except:
         return "Error"
 
-def find_duration(title,type):
+
+def find_duration(title, type):
     if type == "miyandore":
         return title[42]
     elif type == "salane":
@@ -93,21 +96,24 @@ def find_duration(title,type):
     else:
         return 0
 
+
+def should_crawl_codal_detail(letter):
+    return True
+
+
 def crawl():
-    num = 1
-    for i in range(1000):
+    for i in range(50, 1000):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
               '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
-            num)
-        print(num)
-        num = num + 1
+            i + 1)
+        print(i)
 
         js = requests.get(URL, verify=False).json()
 
         ls = js['Letters']
         for l in ls:
-            if l['HasExcel']:
+            if should_crawl_codal_detail(letter=l) and l['HasExcel']:
                 url = l['ExcelUrl']
                 title = l['Title']
                 symbol = l['Symbol']
@@ -129,7 +135,7 @@ def crawl():
                         continue
                     print('Done.')
 
-                    filename = f'media/codal{company_name}.xls'
+                    filename = f'media/{company_name}-codal{title}.xls'
 
                     with open(filename, 'wb') as f:
                         f.write(r.content)
@@ -137,10 +143,11 @@ def crawl():
                     sood_amaliyati = load_values_from_excel(filename, 'سود (زیان) عملیاتی ', 'سود (زيان) عملياتي')
                     sood_khales = load_all_values_from_excel(filename, 'سود (زیان) خالص ')
 
+                    sym, _ = Symbol.objects.get_or_create(slug=symbol, defaults={'company_name': company_name})
+
                     Codal.objects.create(
                         title=title,
-                        symbol=symbol,
-                        company_name=company_name,
+                        symbol=sym,
                         filename=filename,
                         publish_date_time=d.togregorian(),
                         fund=fund,
@@ -148,7 +155,7 @@ def crawl():
                         forosh=forosh,
                         sood_amaliyati=sood_amaliyati,
                         sood_khales=sood_khales,
-                        duration = duration
+                        duration=duration
                     )
 
 

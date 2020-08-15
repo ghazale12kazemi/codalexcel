@@ -20,7 +20,7 @@
     <form method="get">
         <div class="form-row align-items-left">
             <div class="col-auto">
-                {{myFilter.form}}
+                {{ myFilter.form }}
                 <button class="btn btn-outline-info" type="submit">Search</button>
             </div>
         </div>
@@ -30,32 +30,20 @@
     <thead>
     <tr>
         <th>Symbol</th>
-        <th>Company Name</th>
-        <th>Forosh</th>
-        <th>Sood Amaliyati</th>
-        <th>Sood Khales</th>
-        <th>Title</th>
-        <th>Fund</th>
-        <th>Type</th>
-        <th>Duration</th>
-
-
+        <th>3</th>
+        <th>6</th>
+        <th>9</th>
+        <th>12</th>
     </tr>
     </thead>
     <tbody>
-    {% for codal in codals %}
     <tr>
-        <td style="border-bottom: 1px solid black"><a href="{{ codal.download_link }}">{{ codal.symbol }}</a></td>
-        <td style="border-bottom: 1px solid black">{{ codal.symbol.company_name }}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.forosh}}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.sood_amaliyati }}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.sood_khales }}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.title }}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.fund }}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.type }}</td>
-        <td style="border-bottom: 1px solid black">{{ codal.duration }}</td>
+        <td style="border-bottom: 1px solid black">{{ symbol }}</td>
+        <td style="border-bottom: 1px solid black">{% if c3 %}{{ c3.forosh }}{% endif %}</td>
+        <td style="border-bottom: 1px solid black">{% if c6 %}{{ c6.forosh }}{% endif %}</td>
+        <td style="border-bottom: 1px solid black">{% if c9 %}{{ c9.forosh }}{% endif %}</td>
+        <td style="border-bottom: 1px solid black">{% if c12 %}{{ c12.forosh }}{% endif %}</td>
     </tr>
-    {% endfor %}
     </tbody>
 </table>
 </body>

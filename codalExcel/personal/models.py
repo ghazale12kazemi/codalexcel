@@ -5,10 +5,18 @@ from django.utils.html import format_html
 TRANS = str.maketrans('۰۱۲۳۴۵۶۷۸۹', '0123456789')
 ARAB_TRANS = str.maketrans('يك', 'یک')
 
+
+class Symbol(models.Model):
+    slug = models.CharField(max_length=128, unique=True)
+    company_name = models.CharField(max_length=128)
+
+    def __str__(self):
+        return self.slug
+
+
 class Codal(models.Model):
     title = models.CharField(max_length=128)
-    symbol = models.CharField(max_length=128)
-    company_name = models.CharField(max_length=128)
+    symbol = models.ForeignKey(Symbol, on_delete=models.CASCADE)
     filename = models.CharField(max_length=128)
     publish_date_time = models.DateTimeField()
     fund = models.CharField(max_length=128)
@@ -64,6 +72,7 @@ class Codal(models.Model):
             return int(next_next_parent.text.translate(TRANS).replace(',', '').strip())
         except:
             return "Error in sood"
+
     @property
     def some_table(self):
         try:
@@ -85,4 +94,4 @@ class Codal(models.Model):
     #        return 'bad'
 
     def __str__(self):
-        return self.symbol
+        return self.title

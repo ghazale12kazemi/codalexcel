@@ -1,5 +1,13 @@
 from django.contrib import admin
 
-from .models import Codal
+from personal.models import Symbol, Codal
 
-admin.site.register(Codal)
+
+@admin.register(Codal)
+class CodalAdmin(admin.ModelAdmin):
+    list_display = ['title', 'symbol', 'forosh', 'type']
+
+
+@admin.register(Symbol)
+class SymbolAdmin(admin.ModelAdmin):
+    pass

@@ -102,7 +102,7 @@ def should_crawl_codal_detail(letter):
 
 
 def crawl():
-    for i in range(50, 1000):
+    for i in range(1, 3):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
               '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
@@ -115,7 +115,7 @@ def crawl():
         for l in ls:
             if should_crawl_codal_detail(letter=l) and l['HasExcel']:
                 url = l['ExcelUrl']
-                title = l['Title']
+                title = l['Title'].replace('/', '-')
                 symbol = l['Symbol']
                 company_name = l['CompanyName']
                 raw_datetime = l['PublishDateTime']
@@ -125,11 +125,10 @@ def crawl():
                 d = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
                 duration = find_duration(title, type)
 
-                if symbol == "فولاد":
-                    print("فولاد")
+                if fund == "not fund" and type != "mahane":
                     print('Downloading ..')
                     try:
-                        r = requests.get(url, verify=False, timeout=20)
+                        r = requests.get(url, verify=False, timeout=2)
                     except Timeout:
                         print(f'Downloading timeout\n{url}')
                         continue

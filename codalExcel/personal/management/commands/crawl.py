@@ -3,6 +3,10 @@ import requests
 from bs4 import BeautifulSoup
 from django.core.management import BaseCommand
 from requests import Timeout
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC, wait
 
 from personal.models import Codal, Symbol
 
@@ -32,29 +36,6 @@ def whichType(title):
     else:
         return "unknown"
 
-
-def load_values_from_excel(self, query, query2):
-    try:
-        f = open(self, encoding='utf-8')
-        html_doc = f.read().translate(ARAB_TRANS)
-        f.close()
-
-        soup = BeautifulSoup(html_doc, 'html.parser')
-
-        elemenet = soup.find('span', text=query)
-        if not elemenet:
-            elemenet = soup.find('span', text=query2)
-        parent = elemenet.find_parent()
-        next_parent = parent.find_next_sibling()
-        if '(' in next_parent.text:
-            return (-1 * int(
-                next_parent.text.translate(TRANS).replace(',', '').replace(')', '').replace('(', '').strip()))
-        else:
-            return int(next_parent.text.translate(TRANS).replace(',', '').strip())
-    except:
-        return "Error"
-
-
 def load_all_values_from_excel(self, query):
     try:
         f = open(self, encoding='utf-8')
@@ -63,14 +44,15 @@ def load_all_values_from_excel(self, query):
 
         soup = BeautifulSoup(html_doc, 'html.parser')
 
-        elemenet = soup.find_all('span', text=query)
+        elemenet = soup.find_all('span')
 
         for e in elemenet:
-            parent = e.find_parent()
-            next_parent = parent.find_next_sibling()
-            len(next_parent.text)
-            if len(next_parent.text) > 1:
-                break
+            if query == e.text.strip():
+                parent = e.find_parent()
+                next_parent = parent.find_next_sibling()
+
+                if len(next_parent.text.strip()) > 0:
+                    break
 
         if '(' in next_parent.text:
             return (-1 * int(
@@ -79,7 +61,6 @@ def load_all_values_from_excel(self, query):
             return int(next_parent.text.translate(TRANS).replace(',', '').strip())
     except:
         return "Error"
-
 
 def find_duration(title, type):
     if type == "miyandore":
@@ -102,7 +83,8 @@ def should_crawl_codal_detail(letter):
 
 
 def crawl():
-    for i in range(1, 100):
+    driver = webdriver.Chrome()
+    for i in range(4000, 4600):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
               '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
@@ -113,8 +95,9 @@ def crawl():
 
         ls = js['Letters']
         for l in ls:
-            if should_crawl_codal_detail(letter=l) and l['HasExcel']:
-                url = l['ExcelUrl']
+            if l['HasExcel']:
+                u = "https://www.codal.ir/" + l['Url']
+                url = str(u).replace("&sheetId=.*", "&sheetId=1")
                 title = l['Title'].replace('/', '-')
                 symbol = l['Symbol']
                 company_name = l['CompanyName']
@@ -125,22 +108,26 @@ def crawl():
                 d = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
                 duration = find_duration(title, type)
 
-                if fund == "not fund" and type != "mahane":
+                if symbol == "فولاد" and fund == "not fund" and type != "mahane" and type != "unknown":
+                    url = str(url) + "&sheetId=1"
                     print('Downloading ..')
+                    r = requests.get(url, verify=False).text
+                    driver.get(url)
                     try:
-                        r = requests.get(url, verify=False, timeout=2)
-                    except Timeout:
-                        print(f'Downloading timeout\n{url}')
-                        continue
-                    print('Done.')
+                        WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.TAG_NAME, 'table')))
+                        content = driver.page_source
+                        filename = f'media/{company_name}-codal{title}.html'
 
-                    filename = f'media/{company_name}-codal{title}.xls'
+                        with open(filename, 'wb') as f:
+                            f.write(content.encode())
+                        forosh = load_all_values_from_excel(filename, "درآمدهای عملیاتی")
+                        sood_amaliyati = load_all_values_from_excel(filename, 'سود (زیان) عملیاتی')
+                        sood_khales = load_all_values_from_excel(filename, 'سود (زیان) خالص')
 
-                    with open(filename, 'wb') as f:
-                        f.write(r.content)
-                    forosh = load_values_from_excel(filename, "درآمدهای عملیاتی ", 'درآمدهای عملیاتی')
-                    sood_amaliyati = load_values_from_excel(filename, 'سود (زیان) عملیاتی ', 'سود (زيان) عملياتي')
-                    sood_khales = load_all_values_from_excel(filename, 'سود (زیان) خالص ')
+
+                    finally:
+                        print("kkk")
+
 
                     sym, _ = Symbol.objects.get_or_create(slug=symbol, defaults={'company_name': company_name})
 

@@ -25,6 +25,7 @@ class Codal(models.Model):
     sood_amaliyati = models.CharField(max_length=128)
     sood_khales = models.CharField(max_length=128)
     duration = models.CharField(max_length=128)
+    year = models.CharField(max_length=128)
 
     @property
     def download_link(self):

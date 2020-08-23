@@ -36,6 +36,8 @@ def whichType(title):
     else:
         return "unknown"
 
+
+
 def load_all_values_from_excel(self, query):
     try:
         f = open(self, encoding='utf-8')
@@ -77,6 +79,21 @@ def find_duration(title, type):
     else:
         return 0
 
+def find_year(title, type):
+    if type == "miyandore":
+        return title[58:62]
+    elif type == "salane":
+        return title[32:37]
+    elif type == "mahane":
+        return title[41:45]
+    elif type == "talfigi":
+        if "سال " in title:
+            return title[39:43]
+        else:
+            return title[64:68]
+    else:
+        return 0
+
 
 def should_crawl_codal_detail(letter):
     return True
@@ -84,7 +101,7 @@ def should_crawl_codal_detail(letter):
 
 def crawl():
     driver = webdriver.Chrome()
-    for i in range(4000, 4600):
+    for i in range(1, 4):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
               '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
@@ -107,8 +124,9 @@ def crawl():
                 trans_datetime = raw_datetime.translate(TRANS)
                 d = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
                 duration = find_duration(title, type)
+                year = find_year(title,type)
 
-                if symbol == "فولاد" and fund == "not fund" and type != "mahane" and type != "unknown":
+                if fund == "not fund" and type != "unknown" and type != "mahane":
                     url = str(url) + "&sheetId=1"
                     print('Downloading ..')
                     r = requests.get(url, verify=False).text
@@ -141,7 +159,8 @@ def crawl():
                         forosh=forosh,
                         sood_amaliyati=sood_amaliyati,
                         sood_khales=sood_khales,
-                        duration=duration
+                        duration=duration,
+                        year=year
                     )
 
 

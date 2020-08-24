@@ -126,8 +126,10 @@ def should_crawl_codal_detail(title, type):
                 return True
             elif len(title) == 89:
                 return True
-        else:
-            return False
+            else:
+                return False
+    else:
+        return False
 
 
 def crawl():
@@ -135,8 +137,7 @@ def crawl():
     for i in range(1, 50):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
-              '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
-            i + 1)
+              '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(i)
         print(i)
 
         js = requests.get(URL, verify=False).json()
@@ -157,9 +158,9 @@ def crawl():
                 duration = find_duration(title, type)
                 year = find_year(title, type)
                 month = find_month(title, type)
+                hesabresi_nashode = should_crawl_codal_detail(title,type)
 
-                if fund == "not fund" and type != "unknown" and type != "mahane" and should_crawl_codal_detail(title,
-                                                                                                               type):
+                if fund == "not fund" and type != "unknown" and type != "mahane" and hesabresi_nashode:
                     print(type)
                     print(raw_datetime)
                     url = str(url) + "&sheetId=1"

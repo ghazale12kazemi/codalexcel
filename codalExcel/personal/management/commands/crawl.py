@@ -7,6 +7,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC, wait
+from unidecode import unidecode
 
 from personal.models import Codal, Symbol
 
@@ -37,7 +38,6 @@ def whichType(title):
         return "unknown"
 
 
-
 def load_all_values_from_excel(self, query):
     try:
         f = open(self, encoding='utf-8')
@@ -64,9 +64,10 @@ def load_all_values_from_excel(self, query):
     except:
         return "Error"
 
+
 def find_duration(title, type):
     if type == "miyandore":
-        return title[42]
+        return unidecode(title[42])
     elif type == "salane":
         return 12
     elif type == "mahane":
@@ -75,33 +76,63 @@ def find_duration(title, type):
         if "سال " in title:
             return 12
         else:
-            return title[48]
+            return unidecode(title[48])
     else:
         return 0
+
 
 def find_year(title, type):
     if type == "miyandore":
-        return title[58:62]
+        return unidecode(title[58:62])
     elif type == "salane":
-        return title[32:37]
+        return unidecode(title[32:37])
     elif type == "mahane":
-        return title[41:45]
+        return unidecode(title[41:45])
     elif type == "talfigi":
         if "سال " in title:
-            return title[39:43]
+            return unidecode(title[39:43])
         else:
-            return title[64:68]
+            return unidecode(title[64:68])
     else:
         return 0
 
 
-def should_crawl_codal_detail(letter):
-    return True
+def find_month(title, type):
+    if type == "miyandore":
+        return unidecode(title[63:65])
+    elif type == "salane":
+        return unidecode(title[38:40])
+    elif type == "mahane":
+        return unidecode(title[46:48])
+    elif type == "talfigi":
+        if "سال " in title:
+            return unidecode(title[44:46])
+        else:
+            return unidecode(title[69:71])
+    else:
+        return 0
+
+
+def should_crawl_codal_detail(title, type):
+    if "(حسابرسی نشده)" in title:
+        if type == "miyandore" and len(title) == 83:
+            return True
+        elif type == "salane" and len(title) == 58:
+            return True
+        elif type == "mahane":
+            return True
+        elif type == "talfigi":
+            if "سال " in title and len(title) == 64:
+                return True
+            elif len(title) == 89:
+                return True
+        else:
+            return False
 
 
 def crawl():
     driver = webdriver.Chrome()
-    for i in range(1, 4):
+    for i in range(1, 50):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
               '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
@@ -124,9 +155,13 @@ def crawl():
                 trans_datetime = raw_datetime.translate(TRANS)
                 d = jdatetime.datetime.strptime(trans_datetime, DATE_FORMAT)
                 duration = find_duration(title, type)
-                year = find_year(title,type)
+                year = find_year(title, type)
+                month = find_month(title, type)
 
-                if fund == "not fund" and type != "unknown" and type != "mahane":
+                if fund == "not fund" and type != "unknown" and type != "mahane" and should_crawl_codal_detail(title,
+                                                                                                               type):
+                    print(type)
+                    print(raw_datetime)
                     url = str(url) + "&sheetId=1"
                     print('Downloading ..')
                     r = requests.get(url, verify=False).text
@@ -146,7 +181,6 @@ def crawl():
                     finally:
                         print("kkk")
 
-
                     sym, _ = Symbol.objects.get_or_create(slug=symbol, defaults={'company_name': company_name})
 
                     Codal.objects.create(
@@ -160,7 +194,8 @@ def crawl():
                         sood_amaliyati=sood_amaliyati,
                         sood_khales=sood_khales,
                         duration=duration,
-                        year=year
+                        years=year,
+                        month=month
                     )
 
 

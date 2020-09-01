@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.views import View
+from django.db.models.expressions import RawSQL
 
 from personal.models import Codal, Symbol
 from .filters import OrderFilter
@@ -24,36 +25,43 @@ class AllCodalsView(View):
 class RecentSymbolCodalsView(View):
     def get(self, request, symbol_slug):
         sym = get_object_or_404(Symbol, slug=symbol_slug)
-        codals = sym.codal_set.all()
+        codals = sym.codal_set.filter(type__in=['talfigi']).all()
+        if codals:
+            codals = sym.codal_set.filter(type__in=['talfigi','miyandore']) \
+                .annotate(int_duration=RawSQL('CAST(duration AS UNSIGNED)', params=[])) \
+                .annotate(int_years=RawSQL('CAST(years AS UNSIGNED)', params=[])) \
+                .order_by('int_years','int_duration').all()
+        else:
+            codals = sym.codal_set.filter(type__in=['salane', 'miyandore']) \
+                .annotate(int_duration=RawSQL('CAST(duration AS UNSIGNED)', params=[])) \
+                .annotate(int_years=RawSQL('CAST(years AS UNSIGNED)', params=[])) \
+                .order_by('int_years', 'int_duration').all()
+        sell_volume = []
+        report_date = []
+        frosh_list = []
+        previous_codal = None
 
-        try:
-            c3 = codals.filter(type='miyandore', duration__in=['3', '۳']).last()
-        except Codal.DoesNotExist:
-            c3 = None
+        print([(codal.id, codal.years, codal.int_duration) for codal in codals])
 
-        try:
-            c6 = codals.filter(type='miyandore', duration__in=['6', '۶']).last()
-        except Codal.DoesNotExist:
-            c6 = None
 
-        try:
-            c9 = codals.filter(type='miyandore', duration__in=['9', '۹']).last()
-        except Codal.DoesNotExist:
-            c9 = None
+        for codal in codals:
+            if codal.duration == '3' or previous_codal is None:
+                sell_volume.append(int(codal.forosh))
+            else:
+                sell_volume.append(int(codal.forosh) - int(previous_codal.forosh))
+            report_date.append('{}/{}'.format(codal.int_years, codal.int_duration))
+            frosh_list.append(codal.forosh)
+            previous_codal = codal
 
-        try:
-            c12 = codals.filter(type='salane', duration__in=['12', '۱۲']).last()
-        except Codal.DoesNotExist:
-            c12 = None
 
         return render(
             request=request,
             template_name='symbol_codals.html',
             context={
                 'symbol': sym,
-                'c3': c3,
-                'c6': c6,
-                'c9': c9,
-                'c12': c12,
+                'sell_list': sell_volume,
+                'date_list': report_date,
+                'frosh_list':frosh_list,
             }
         )
+

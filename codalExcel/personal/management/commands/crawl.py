@@ -67,16 +67,16 @@ def load_all_values_from_excel(self, query):
 
 def find_duration(title, type):
     if type == "miyandore":
-        return unidecode(title[42])
+        return int(unidecode(title[42]))
     elif type == "salane":
-        return 12
+        return int(12)
     elif type == "mahane":
         return 1
     elif type == "talfigi":
         if "سال " in title:
-            return 12
+            return int(12)
         else:
-            return unidecode(title[48])
+            return int(unidecode(title[48]))
     else:
         return 0
 
@@ -134,10 +134,11 @@ def should_crawl_codal_detail(title, type):
 
 def crawl():
     driver = webdriver.Chrome()
-    for i in range(1, 50):
+    for i in range(1, 2600):
         URL = 'https://search.codal.ir/api/search/v2/q?&Audited=true&AuditorRef=-1&Category=-1&Childs=true' \
               '&CompanyState=-1&CompanyType=-1&Consolidatable=true&IsNotAudited=false&Length=-1&LetterType=-1' \
-              '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(i)
+              '&Mains=true&NotAudited=true&NotConsolidatable=true&PageNumber={}&Publisher=false&TracingNo=-1&search=false'.format(
+            i)
         print(i)
 
         js = requests.get(URL, verify=False).json()
@@ -158,9 +159,11 @@ def crawl():
                 duration = find_duration(title, type)
                 year = find_year(title, type)
                 month = find_month(title, type)
-                hesabresi_nashode = should_crawl_codal_detail(title,type)
+                hesabresi_nashode = should_crawl_codal_detail(title, type)
 
-                if fund == "not fund" and type != "unknown" and type != "mahane" and hesabresi_nashode:
+                if fund == "not fund" and type != "unknown" and type != "mahane" and hesabresi_nashode and int(
+                        month) == int(duration):
+
                     print(type)
                     print(raw_datetime)
                     url = str(url) + "&sheetId=1"

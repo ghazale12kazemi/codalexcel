@@ -30,20 +30,26 @@
     <thead>
     <tr>
         <th>Symbol</th>
-        <th>3</th>
-        <th>6</th>
-        <th>9</th>
-        <th>12</th>
+        {% for date in date_list %}
+        <th>{{ date }}</th>
+        {% endfor %}
     </tr>
     </thead>
     <tbody>
+
     <tr>
         <td style="border-bottom: 1px solid black">{{ symbol }}</td>
-        <td style="border-bottom: 1px solid black">{% if c3 %}{{ c3.forosh }}{% endif %}</td>
-        <td style="border-bottom: 1px solid black">{% if c6 %}{{ c6.forosh }}{% endif %}</td>
-        <td style="border-bottom: 1px solid black">{% if c9 %}{{ c9.forosh }}{% endif %}</td>
-        <td style="border-bottom: 1px solid black">{% if c12 %}{{ c12.forosh }}{% endif %}</td>
+        {% for sell in sell_list %}
+        <td style="border-bottom: 1px solid black">{{ sell }}</td>
+        {% endfor %}
     </tr>
+      <tr>
+        <td style="border-bottom: 1px solid black">{{ symbol }}</td>
+        {% for sell in frosh_list %}
+        <td style="border-bottom: 1px solid black">{{ sell }}</td>
+        {% endfor %}
+    </tr>
+
     </tbody>
 </table>
 </body>

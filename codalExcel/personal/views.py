@@ -23,45 +23,63 @@ class AllCodalsView(View):
 
 
 class RecentSymbolCodalsView(View):
-    def get(self, request, symbol_slug):
-        sym = get_object_or_404(Symbol, slug=symbol_slug)
-        codals = sym.codal_set.filter(type__in=['talfigi']).all()
-        if codals:
-            codals = sym.codal_set.filter(type__in=['talfigi','miyandore']) \
+    def get(self, request):
+        NOT_FOUND = ''
+        sales = []
+        symbols = []
+        for sym in Symbol.objects.all():
+            symbols.append(sym.slug)
+            codal_set = sym.codal_set.filter(type__in=['salane', 'talfigi', 'miyandore']) \
                 .annotate(int_duration=RawSQL('CAST(duration AS UNSIGNED)', params=[])) \
-                .annotate(int_years=RawSQL('CAST(years AS UNSIGNED)', params=[])) \
-                .order_by('int_years','int_duration').all()
-        else:
-            codals = sym.codal_set.filter(type__in=['salane', 'miyandore']) \
-                .annotate(int_duration=RawSQL('CAST(duration AS UNSIGNED)', params=[])) \
-                .annotate(int_years=RawSQL('CAST(years AS UNSIGNED)', params=[])) \
-                .order_by('int_years', 'int_duration').all()
-        sell_volume = []
-        report_date = []
-        frosh_list = []
-        previous_codal = None
+                .annotate(int_years=RawSQL('CAST(years AS UNSIGNED)', params=[]))
+            sym_sales = []
+            for year in range(1398, 1400):
+                year_codals = codal_set.filter(int_years=year)
+                prev_codal = None
+                for duration in (3, 6, 9, 12):
+                    codals = year_codals.filter(int_duration=duration).all()
+                    success = False
+                    for cur_codal in codals:
+                        if success:
+                            break
+                        try:
+                            if prev_codal is None:
+                                sym_sales.append(int(cur_codal.forosh))
+                            else:
+                                sym_sales.append(int(cur_codal.forosh) - int(prev_codal.forosh))
+                            success = True
+                            prev_codal = cur_codal
+                        except Exception as e:
+                            pass
+                    if len(codals) == 0:
+                        sym_sales.append(NOT_FOUND)
+                    elif not success:
+                        sym_sales.append('BAD')
+            sales.append(sym_sales)
 
-        print([(codal.id, codal.years, codal.int_duration) for codal in codals])
+        dates = []
+        for year in range(1398, 1400):
+            for duration in (3, 6, 9, 12):
+                dates.append('{}/{}'.format(year, duration))
+        
+        while not any(filter(lambda sale: sale[0] != NOT_FOUND, sales)):
+            sales = list(map(lambda sale: sale[1:], sales))
+            dates = dates[1:]
+        
+        while not any(filter(lambda sale: sale[-1] != NOT_FOUND, sales)):
+            sales = list(map(lambda sale: sale[:-1], sales))
+            dates = dates[0:-1]
 
-
-        for codal in codals:
-            if codal.duration == '3' or previous_codal is None:
-                sell_volume.append(int(codal.forosh))
-            else:
-                sell_volume.append(int(codal.forosh) - int(previous_codal.forosh))
-            report_date.append('{}/{}'.format(codal.int_years, codal.int_duration))
-            frosh_list.append(codal.forosh)
-            previous_codal = codal
-
+        sales = list(sales)
+        for i, sym in enumerate(symbols):
+            sales[i].insert(0, sym)
 
         return render(
             request=request,
             template_name='symbol_codals.html',
             context={
-                'symbol': sym,
-                'sell_list': sell_volume,
-                'date_list': report_date,
-                'frosh_list':frosh_list,
+                'thead': dates,
+                'tbody': sales,
             }
         )
 

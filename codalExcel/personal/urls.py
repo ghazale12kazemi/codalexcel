@@ -6,5 +6,5 @@ app_name = 'personal'
 
 urlpatterns = [
     path('', AllCodalsView.as_view(), name='codals'),
-    path('symbol-codals/<str:symbol_slug>/', RecentSymbolCodalsView.as_view(), name='symbol_codals'),
+    path('symbol-codals/', RecentSymbolCodalsView.as_view(), name='symbol_codals'),
 ]

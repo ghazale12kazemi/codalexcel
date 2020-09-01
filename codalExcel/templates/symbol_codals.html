@@ -29,26 +29,23 @@
 <table class="table table-striped">
     <thead>
     <tr>
-        <th>Symbol</th>
-        {% for date in date_list %}
-        <th>{{ date }}</th>
+        <th> </th>
+        {% for head in thead %}
+        <th>{{ head }}</th>
         {% endfor %}
     </tr>
     </thead>
     <tbody>
 
-    <tr>
-        <td style="border-bottom: 1px solid black">{{ symbol }}</td>
-        {% for sell in sell_list %}
-        <td style="border-bottom: 1px solid black">{{ sell }}</td>
+        {% for row in tbody %}
+        <tr>
+            {% for cell in row %}
+            <td style="border-bottom: 1px solid black">
+                {{ cell }}
+            </td>
+            {% endfor %}
+        </tr>
         {% endfor %}
-    </tr>
-      <tr>
-        <td style="border-bottom: 1px solid black">{{ symbol }}</td>
-        {% for sell in frosh_list %}
-        <td style="border-bottom: 1px solid black">{{ sell }}</td>
-        {% endfor %}
-    </tr>
 
     </tbody>
 </table>

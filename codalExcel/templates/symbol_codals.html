@@ -28,8 +28,10 @@
 </div>
 <table class="table table-striped">
     <thead>
-    <tr>
-        <th> </th>
+    <tr id="dates">
+        <th>
+            Symbol
+        </th>
         {% for head in thead %}
         <th>{{ head }}</th>
         {% endfor %}
@@ -39,7 +41,12 @@
 
         {% for row in tbody %}
         <tr>
-            {% for cell in row %}
+            <td style="border-bottom: 1px solid black">
+                <a href="#" data-toggle="modal" data-target="#chartModal" onclick="draw_chart(this)">
+                    {{ row.0 }}
+                </a>
+            </td>
+            {% for cell in row|slice:"1:" %}
             <td style="border-bottom: 1px solid black">
                 {{ cell }}
             </td>
@@ -49,5 +56,71 @@
 
     </tbody>
 </table>
+
+<!-- Modal -->
+<div class="modal fade" id="chartModal" tabindex="-1" role="dialog" aria-labelledby="chartModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="chartModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div id="chartContainer"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <script>
+        function draw_chart(e) {
+            var row = e.parentElement.parentElement;
+            var modal = document.getElementById("chartModal");
+            modal.getElementsByTagName("h5")[0].innerHTML = e.innerHTML;
+            var values = Array.from(row.children).slice(1);
+            values = values.map((td) => parseInt(td.innerHTML));
+            values = values.map((value) => isNaN(value) ? 0 : value);
+
+            var header = document.getElementById("dates");
+            var dates = Array.from(header.children).slice(1);
+            dates = dates.map((td) => td.innerHTML);
+
+            var points = [];
+            for (var i = 0; i < values.length; i++)
+                points.push({label: dates[i], y: values[i]});
+
+            var chart = new CanvasJS.Chart("chartContainer", {
+                animationEnabled: true,
+                theme: "light1",
+                data: [{
+                    type: "line",
+                    indexLabelFontSize: 16,
+                    dataPoints: points,
+                }]
+            });
+
+            $('#chartModal').on('shown.bs.modal', function () {
+                chart.render();
+            });
+
+            console.log(values);
+        }
+    </script>
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+<style>
+#chartContainer {
+    display: inline-block;
+    width: 100%;
+    height: 400px
+}
+.modal-body {
+    padding: 10px;
+    height: 420px;
+}
+</style>
+
 </body>
 </html>
